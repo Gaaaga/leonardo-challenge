@@ -1,15 +1,21 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useQuery } from '@apollo/client'
 import { useParams } from 'next/navigation'
 import { GET_CHARACTERS } from '@/graphql/queries'
 import { Box, Button, Grid, Heading, Skeleton, Text, useDisclosure, Center } from '@chakra-ui/react'
 import Link from 'next/link'
 import { Character } from '@/types/character'
-import CharacterModal from '@/components/CharacterModal'
 import { useState } from 'react'
 import { withUserGuard } from '@/lib/withUserGuard'
 import CharacterCard from '@/components/CharacterCard'
+import { logError } from '@/lib/logger'
+
+const CharacterModal = dynamic(() => import('@/components/CharacterModal'), {
+  ssr: false, // Modal doesn't need SSR
+  loading: () => <p>Loading modal...</p>,
+})
 
 function PageContent() {
   const { page } = useParams<{ page: string }>()
@@ -49,6 +55,7 @@ function PageContent() {
   }
 
   if (error) {
+    logError('GraphQL Query Failed', error)
     return (
       <Center p={8}>
         <Text color="red.500">Failed to load data. Please try again later.</Text>
