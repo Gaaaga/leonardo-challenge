@@ -1,16 +1,17 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useQuery } from '@apollo/client'
 import { useParams } from 'next/navigation'
 import { GET_CHARACTERS } from '@/graphql/queries'
 import { Box, Button, Grid, Heading, Skeleton, Text, useDisclosure, Center } from '@chakra-ui/react'
 import Link from 'next/link'
-import { Character } from '@/types/character'
-import { useState } from 'react'
+import { Character, CharacterPageInfo } from '@/types/character'
+import { useEffect, useState } from 'react'
 import { withUserGuard } from '@/lib/withUserGuard'
 import CharacterCard from '@/components/CharacterCard'
 import { logError } from '@/lib/logger'
+import { retry } from '@/lib/retry'
+import client from '@/lib/apollo-client'
 
 const CharacterModal = dynamic(() => import('@/components/CharacterModal'), {
   ssr: false, // Modal doesn't need SSR
@@ -19,11 +20,33 @@ const CharacterModal = dynamic(() => import('@/components/CharacterModal'), {
 
 function PageContent() {
   const { page } = useParams<{ page: string }>()
+  const [characters, setCharacters] = useState<Character[]>([])
+  const [info, setInfo] = useState<CharacterPageInfo | null>(null)
   const currentPage = parseInt(page || '1')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
-  const { data, loading, error } = useQuery(GET_CHARACTERS, {
-    variables: { page: currentPage },
-  })
+  useEffect(() => {
+    setLoading(true)
+    retry(() =>
+      client.query({
+        query: GET_CHARACTERS,
+        variables: { page: currentPage },
+      })
+    )
+      .then(res => {
+        setCharacters(res.data.characters.results)
+        setInfo(res.data.characters.info)
+        setError(null)
+      })
+      .catch(err => {
+        console.error('Final fetch failed:', err)
+        setError(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [currentPage])
 
   const [selected, setSelected] = useState<Character | null>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -62,9 +85,6 @@ function PageContent() {
       </Center>
     )
   }
-
-  const characters: Character[] = data.characters.results
-  const info = data.characters.info
 
   return (
     <Box p={8}>
