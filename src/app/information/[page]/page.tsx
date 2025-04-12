@@ -88,23 +88,37 @@ function PageContent() {
 
   return (
     <Box p={8}>
-      <Heading mb={4}>Characters</Heading>
-
+      <Heading mb={4} size={{ base: 'md', md: 'lg' }}>
+        Characters
+      </Heading>
       <Grid templateColumns="repeat(auto-fit, minmax(160px, 1fr))" gap={6}>
         {characters.map(char => (
           <CharacterCard key={char.id} character={char} onClick={() => handleClick(char)} />
         ))}
       </Grid>
+      {info && (
+        <Box mt={8} display="flex" justifyContent="space-between">
+          {info.prev ? (
+            <Button as={Link} href={`/information/${info.prev}`}>
+              Prev
+            </Button>
+          ) : (
+            <Button isDisabled opacity={0.6} cursor="not-allowed">
+              Prev
+            </Button>
+          )}
 
-      <Box mt={8} display="flex" justifyContent="space-between">
-        <Button as={Link} href={`/information/${currentPage - 1}`} isDisabled={!info.prev}>
-          Prev
-        </Button>
-        <Button as={Link} href={`/information/${currentPage + 1}`} isDisabled={!info.next}>
-          Next
-        </Button>
-      </Box>
-
+          {info.next ? (
+            <Button as={Link} href={`/information/${info.next}`}>
+              Next
+            </Button>
+          ) : (
+            <Button isDisabled opacity={0.6} cursor="not-allowed">
+              Next
+            </Button>
+          )}
+        </Box>
+      )}
       <CharacterModal
         character={selected}
         isOpen={isOpen}
