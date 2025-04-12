@@ -2,16 +2,23 @@
 
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
-import { GET_CHARACTERS } from '@/graphql/queries'
-import { Box, Button, Grid, Heading, Skeleton, Text, useDisclosure, Center } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Grid,
+  Heading,
+  Skeleton,
+  useDisclosure,
+  Center,
+  Alert,
+  AlertIcon,
+} from '@chakra-ui/react'
 import Link from 'next/link'
 import { Character, CharacterPageInfo } from '@/types/character'
 import { useEffect, useState } from 'react'
 import { withUserGuard } from '@/lib/withUserGuard'
 import CharacterCard from '@/components/CharacterCard'
-import { logError } from '@/lib/logger'
-import { retry } from '@/lib/retry'
-import client from '@/lib/apollo-client'
+import { fetchCharactersByPage } from '@/lib/fetch-characters'
 
 const CharacterModal = dynamic(() => import('@/components/CharacterModal'), {
   ssr: false, // Modal doesn't need SSR
@@ -28,24 +35,22 @@ function PageContent() {
 
   useEffect(() => {
     setLoading(true)
-    retry(() =>
-      client.query({
-        query: GET_CHARACTERS,
-        variables: { page: currentPage },
-      })
-    )
-      .then(res => {
-        setCharacters(res.data.characters.results)
-        setInfo(res.data.characters.info)
-        setError(null)
-      })
-      .catch(err => {
-        console.error('Final fetch failed:', err)
-        setError(err)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+    fetchCharactersByPage(currentPage).then(result => {
+      switch (result.type) {
+        case 'success':
+          setCharacters(result.characters)
+          setInfo(result.info)
+          setError(null)
+          break
+        case 'invalid_page':
+          setError(new Error('INVALID_PAGE'))
+          break
+        case 'error':
+          setError(new Error(result.message))
+          break
+      }
+      setLoading(false)
+    })
   }, [currentPage])
 
   const [selected, setSelected] = useState<Character | null>(null)
@@ -78,10 +83,19 @@ function PageContent() {
   }
 
   if (error) {
-    logError('GraphQL Query Failed', error)
     return (
       <Center p={8}>
-        <Text color="red.500">Failed to load data. Please try again later.</Text>
+        <Box textAlign="center">
+          <Alert status="error" mb={4} borderRadius="md">
+            <AlertIcon />
+            {error.message === 'INVALID_PAGE'
+              ? 'Page not found or too large. Try returning to the first page.'
+              : 'Failed to load characters. Please try again later.'}
+          </Alert>
+          <Button as={Link} href="/information/1" colorScheme="teal">
+            Go to First Page
+          </Button>
+        </Box>
       </Center>
     )
   }
