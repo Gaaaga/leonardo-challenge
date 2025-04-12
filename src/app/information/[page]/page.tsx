@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import { Character, CharacterPageInfo } from '@/types/character'
-import { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { withUserGuard } from '@/lib/withUserGuard'
 import CharacterCard from '@/components/CharacterCard'
 import { fetchCharactersByPage } from '@/lib/fetch-characters'
@@ -145,4 +145,6 @@ function PageContent() {
   )
 }
 
-export default withUserGuard(PageContent)
+const ProtectedPage = withUserGuard(PageContent)
+
+export default ProtectedPage as () => JSX.Element

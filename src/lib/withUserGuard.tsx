@@ -2,12 +2,12 @@
 
 import { useUserInfo } from '@/context/UserInfoContext'
 import { Spinner, Center, Text } from '@chakra-ui/react'
-import { JSX, useEffect, useState } from 'react'
+import { useEffect, useState, ComponentType } from 'react'
 
-export function withUserGuard<P extends JSX.IntrinsicAttributes>(
-  Component: React.ComponentType<P>
-) {
-  return function ProtectedComponent(props: P) {
+export function withUserGuard<P extends Record<string, unknown>>(
+  Component: ComponentType<P>
+): ComponentType<P> {
+  const Guarded = (props: P) => {
     const { userInfo } = useUserInfo()
     const [hasMounted, setHasMounted] = useState(false)
 
@@ -37,4 +37,7 @@ export function withUserGuard<P extends JSX.IntrinsicAttributes>(
 
     return <Component {...props} />
   }
+
+  Guarded.displayName = `WithUserGuard(${Component.displayName || Component.name || 'Component'})`
+  return Guarded
 }
