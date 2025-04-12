@@ -21,7 +21,7 @@ A frontend technical challenge built with **Next.js App Router + Chakra UI + Apo
 - **React Context + Hooks**
 
 ## 🗂️ Project Structure
-
+```
 src/
 ├── app/                      
 │   ├── layout.tsx            # Root layout, wraps all pages with Providers
@@ -53,22 +53,17 @@ src/
 │
 ├── types/                    # Shared TypeScript types
 │   └── character.ts          # Character data types
-
+```
 
 ## ⚙️ Getting Started
 To run this project locally:
 
 ```bash
 # Install dependencies
-
 npm install
-
 # Start development server
-
 npm run dev
-
 # Build for production
-
 npm run build && npm run start
 ```
 
@@ -94,4 +89,31 @@ npm run build && npm run start
 | 🧼 Layout discipline | Page logic isolated from Providers and shared layout |
 | 🧩 HOC pattern | Reusable route guard logic via `withUserGuard` |
 
----
+
+## 🛠 If I Had More Time...
+
+Here are a few additional things I would love to improve or implement if time allowed:
+
+- 🧪 Add unit and integration tests using Jest + Testing Library
+- 🧭 Extract a shared `Layout` component with persistent `Navbar`
+- 💬 Show toast notifications for actions like info save or logout
+- ⚙️ Add loading spinners to page transitions
+- 🌐 Handle real authentication with token-based login
+- 🌈 Use Chakra’s custom theme to standardize design tokens
+- 💾 Persist pagination state in URL and/or localStorage
+- 🔍 Add real-time filtering or search to the character list
+- 🌙 Implement light/dark mode toggle
+
+This list reflects how I approach frontend challenges — not just to make it work, but to make it polished, extensible, and user-friendly.
+
+
+## 🙋‍♀️ A Note to the Reviewers
+
+Thank you for taking the time to review this project.
+
+This challenge was built with the same care and standards I bring to real production work. I approached it not just as a technical task, but as a product experience — thinking through the user journey, data boundaries, error handling, and mobile responsiveness.
+
+There’s always room to improve — I’d love to discuss how I might extend this further, whether through testing, animations, shared layout, or better UX flows.
+
+If there’s anything specific you’d like to dive deeper into, I’m happy to walk through the decisions I made. Looking forward to connecting!
+

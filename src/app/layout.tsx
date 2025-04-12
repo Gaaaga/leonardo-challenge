@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = {
   title: 'Leonardo Challenge',
-  description: 'Frontend Challenge with Chakra and Apollo',
+  description: 'Frontend challenge using Next.js, Chakra UI, Apollo',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
