@@ -41,9 +41,13 @@ export async function fetchCharactersByPage(page: number): Promise<FetchCharacte
       characters,
       info,
     }
-  } catch (err: any) {
-    logError('GraphQL fetchCharactersByPage failed', err)
-    const message = err?.message ?? 'Unknown error'
-    return { type: 'error', message }
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      logError('GraphQL fetchCharactersByPage failed', err)
+      return { type: 'error', message: err.message }
+    }
+
+    logError('Unknown error during fetchCharactersByPage', err)
+    return { type: 'error', message: 'Unexpected error occurred' }
   }
 }
