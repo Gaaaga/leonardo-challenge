@@ -3,12 +3,13 @@
 import { useQuery } from '@apollo/client'
 import { useParams } from 'next/navigation'
 import { GET_CHARACTERS } from '@/graphql/queries'
-import { Box, Button, Grid, Image, Text, VStack, useDisclosure, Heading } from '@chakra-ui/react'
+import { Box, Button, Grid, Heading, Skeleton, Text, useDisclosure, Center } from '@chakra-ui/react'
 import Link from 'next/link'
 import { Character } from '@/types/character'
 import CharacterModal from '@/components/CharacterModal'
 import { useState } from 'react'
 import { withUserGuard } from '@/lib/withUserGuard'
+import CharacterCard from '@/components/CharacterCard'
 
 function PageContent() {
   const { page } = useParams<{ page: string }>()
@@ -25,9 +26,35 @@ function PageContent() {
     setSelected(char)
     onOpen()
   }
+  if (loading) {
+    return (
+      <Grid
+        p={8}
+        templateColumns={{
+          base: 'repeat(1, 1fr)',
+          sm: 'repeat(2, 1fr)',
+          md: 'repeat(3, 1fr)',
+        }}
+        gap={6}
+      >
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Box key={i} p={4} rounded="md" shadow="sm" bg="gray.100">
+            <Skeleton height="150px" />
+            <Skeleton mt={4} height="20px" />
+            <Skeleton mt={2} height="14px" />
+          </Box>
+        ))}
+      </Grid>
+    )
+  }
 
-  if (loading) return <Text p={8}>Loading...</Text>
-  if (error) return <Text p={8}>Error: {error.message}</Text>
+  if (error) {
+    return (
+      <Center p={8}>
+        <Text color="red.500">Failed to load data. Please try again later.</Text>
+      </Center>
+    )
+  }
 
   const characters: Character[] = data.characters.results
   const info = data.characters.info
@@ -38,21 +65,7 @@ function PageContent() {
 
       <Grid templateColumns="repeat(auto-fit, minmax(160px, 1fr))" gap={6}>
         {characters.map(char => (
-          <VStack
-            key={char.id}
-            bg="gray.100"
-            p={4}
-            borderRadius="md"
-            onClick={() => handleClick(char)}
-            cursor="pointer"
-            _hover={{ bg: 'gray.200' }}
-          >
-            <Image src={char.image} alt={char.name} borderRadius="md" />
-            <Text fontWeight="bold">{char.name}</Text>
-            <Text fontSize="sm">
-              {char.species} - {char.status}
-            </Text>
-          </VStack>
+          <CharacterCard key={char.id} character={char} onClick={() => handleClick(char)} />
         ))}
       </Grid>
 
