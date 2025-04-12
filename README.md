@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Leonardo Frontend Challenge
 
-## Getting Started
+A frontend technical challenge built with **Next.js App Router + Chakra UI + Apollo Client**, focused on delivering a clean user experience, mobile responsiveness, and scalable architecture.
 
-First, run the development server:
+## 🚀 Features
+
+- 🔐 User information input and storage with modal gating
+- 🧑‍💼 Global context management for user state
+- 🪐 Paginated character viewer from Rick and Morty GraphQL API
+- 📱 Fully responsive layout with Chakra UI
+- 🧭 Route guard for protected pages (`withUserGuard`)
+- 🧼 Optimized loading and error states (with retry + graceful fallback)
+- 💡 Strong emphasis on UX (button accessibility, typography, spacing)
+
+## 🛠️ Tech Stack
+
+- **Next.js 15 (App Router)**
+- **TypeScript**
+- **Chakra UI**
+- **Apollo Client + GraphQL**
+- **React Context + Hooks**
+
+## 🗂️ Project Structure
+
+src/
+├── app/                      
+│   ├── layout.tsx            # Root layout, wraps all pages with Providers
+│   ├── page.tsx              # Homepage (user info + buttons)
+│   ├── providers.tsx         # Global providers: Chakra, Apollo, UserInfo, Modal
+│   ├── GlobalModals.tsx      # Always-mounted modals (like BlockingModal)
+│   ├── icon.svg              # Favicon (auto-detected by Next.js)
+│   └── information/
+│       └── [page]/page.tsx   # Characters page with pagination
+│
+├── components/               # Reusable UI components
+│   ├── BlockingModal.tsx     # User info input modal
+│   ├── CharacterCard.tsx     # Each character's card
+│   └── CharacterModal.tsx    # Popup for character details
+│
+├── context/                  # Global React Context state
+│   ├── UserInfoContext.tsx   # Handles username & job state
+│   └── UserModalContext.tsx  # Controls modal open/close state
+│
+├── graphql/                  # Apollo query definitions
+│   └── queries.ts            # Rick & Morty GraphQL queries
+│
+├── lib/                      # Core logic / infrastructure
+│   ├── apollo-client.ts      # Apollo Client setup
+│   ├── fetch-characters.ts   # API call + error-type abstraction
+│   ├── logger.ts             # Dev logging (can extend to analytics)
+│   ├── retry.ts              # Retry utility for async logic
+│   └── withUserGuard.tsx     # Route HOC that blocks unauthenticated access
+│
+├── types/                    # Shared TypeScript types
+│   └── character.ts          # Character data types
+
+
+## ⚙️ Getting Started
+To run this project locally:
 
 ```bash
+# Install dependencies
+
+npm install
+
+# Start development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+
+npm run build && npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🧩 Core Design Principles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **User-first flow**: Every page is gated by user info (username + job title), enforced by modal and `withUserGuard`.
+- **Separation of concerns**: API logic lives outside UI components (via `lib/fetch-characters.ts`).
+- **Retry-friendly requests**: GraphQL queries wrapped with `retry()` logic for better resilience.
+- **Responsive by default**: Chakra UI’s responsive props ensure a good mobile experience.
+- **Centralized context**: Providers handle state like user info and modal visibility globally.
+- **Fail-safe routing**: Invalid page numbers result in error fallback + a redirect option.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## 💡 Engineering Highlights
 
-To learn more about Next.js, take a look at the following resources:
+| Area | Technique |
+|------|-----------|
+| 🔐 Auth-like flow | `withUserGuard` HOC + BlockingModal gating |
+| 🧠 State management | React Context for user + modal logic |
+| 🔁 Fetch resilience | Retry wrapper with error typing |
+| ⚛️ Typed GraphQL | Apollo + auto-typed query results |
+| 📱 Mobile UX | Button size, spacing, and direction tuned with Chakra |
+| 🧼 Layout discipline | Page logic isolated from Providers and shared layout |
+| 🧩 HOC pattern | Reusable route guard logic via `withUserGuard` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
